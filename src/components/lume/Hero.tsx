@@ -25,8 +25,10 @@ export function Hero() {
       requestAnimationFrame(() => {
         const rect = wrap.getBoundingClientRect();
         const wh = window.innerHeight;
-        const scrollable = wrap.offsetHeight - wh;
-        const raw = (-rect.top) / scrollable;
+        const scrollable = wrap.offsetHeight; // Total height 300vh
+        
+        // Progress 0.0 at top, 1.0 at the very bottom of the 300vh
+        const raw = (-rect.top) / (scrollable - wh);
         setProgress(Math.max(0, Math.min(1, raw)));
         ticking = false;
       });
@@ -37,40 +39,43 @@ export function Hero() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  // ── Animation Timings (Clean & High-Quality) ──
+  // ── Animation Timings ──
   
-  // Crossfade progress
-  const p = Math.max(0, Math.min(1, (progress - 0.1) / 0.8));
+  // Crossfade starts at 10% and finishes at 80% to ensure stability at the end
+  const p = Math.max(0, Math.min(1, (progress - 0.1) / 0.7));
 
   // Layer 1: Reception (Base)
-  // Zooms from 1.0 to 1.4
   const recScale = 1 + progress * 0.4;
-  const recOpacity = 1 - p;
+  const recOpacity = 1 - Math.pow(p, 2); // Accelerate fade out
 
   // Layer 2: Lounge (Reveal)
-  // Zooms from 1.15 down to 1.05
   const loungeScale = 1.15 - p * 0.1;
   const loungeOpacity = p;
 
   return (
-    <div ref={wrapRef} className="relative" style={{ height: "300vh" }}>
+    <div 
+      ref={wrapRef} 
+      id="top"
+      className="relative bg-black" 
+      style={{ height: "300vh" }}
+    >
       {/* Sticky viewport frame */}
-      <div className="sticky top-0 h-screen w-full overflow-hidden bg-background">
+      <div className="sticky top-0 h-screen w-full overflow-hidden">
         
-        {/* ── Layer 1: The Reception (Crystal Clear) ── */}
+        {/* ── Layer 1: The Reception ── */}
         <div
-          className="absolute inset-0 origin-center transition-opacity duration-100"
+          className="absolute inset-0 origin-center"
           style={{
             opacity: recOpacity,
             transform: `scale(${recScale})`,
             willChange: "transform, opacity",
+            zIndex: 1,
           }}
         >
           <img 
             src={reception} 
             alt="Lume Salon Reception" 
             className="w-full h-full object-cover"
-            style={{ imageRendering: "auto" }} 
           />
           <div
             className="absolute inset-0"
@@ -88,13 +93,13 @@ export function Hero() {
             opacity: loungeOpacity,
             transform: `scale(${loungeScale})`,
             willChange: "transform, opacity",
+            zIndex: 2,
           }}
         >
           <img 
             src={lounge} 
             alt="Lume Salon Lounge" 
             className="w-full h-full object-cover"
-            style={{ imageRendering: "auto" }}
           />
           <div
             className="absolute inset-0"
@@ -105,10 +110,10 @@ export function Hero() {
           />
         </div>
 
-        {/* ── CONTENT OVERLAY (Stable & High Quality) ── */}
+        {/* ── CONTENT OVERLAY ── */}
         <div
-          className="absolute inset-0 z-20 flex items-center justify-center px-4 sm:px-6"
-          style={{ transform: `translateY(${progress * -15}px)` }}
+          className="absolute inset-0 z-10 flex items-center justify-center px-4 sm:px-6"
+          style={{ transform: `translateY(${progress * -20}px)` }}
         >
           <div className="max-w-5xl mx-auto text-center">
             <Reveal variant="blur">
@@ -137,16 +142,16 @@ export function Hero() {
 
         {/* Scroll Indicator */}
         <div 
-          className="absolute bottom-8 left-1/2 -translate-x-1/2 z-20 flex flex-col items-center gap-3 text-muted-foreground transition-opacity duration-500"
-          style={{ opacity: 1 - progress * 2 }}
+          className="absolute bottom-8 left-1/2 -translate-x-1/2 z-10 flex flex-col items-center gap-3 text-muted-foreground transition-opacity duration-500"
+          style={{ opacity: 1 - progress * 2.5 }}
         >
           <span className="text-[10px] tracking-[0.4em] uppercase">Scroll</span>
           <div className="w-px h-12 bg-gradient-to-b from-gold to-transparent" />
         </div>
 
-        {/* Vignette for Depth */}
+        {/* Vignette */}
         <div
-          className="absolute inset-0 pointer-events-none z-40"
+          className="absolute inset-0 pointer-events-none z-30"
           style={{ background: `radial-gradient(circle at center, transparent 30%, oklch(from var(--background) l c h / 0.3) 100%)` }}
         />
       </div>
