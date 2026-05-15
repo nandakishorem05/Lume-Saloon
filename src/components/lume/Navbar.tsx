@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import logo from "@/assets/lume-logo.png";
 import { ThemeToggle } from "./ThemeToggle";
-import { useMagnetic } from "@/hooks/useMagnetic";
 
 const links = [
   { href: "#about", label: "About" },

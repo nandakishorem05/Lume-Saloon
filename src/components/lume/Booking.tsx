@@ -1,10 +1,10 @@
 import { useState } from "react";
 import bg from "@/assets/lume-styling.jpg";
 import { Reveal } from "./Reveal";
-import { Phone, Calendar as CalendarIcon, Clock, Check, ChevronsUpDown, MessageSquare } from "lucide-react";
-import { useMagnetic } from "@/hooks/useMagnetic";
+import { Phone, Calendar as CalendarIcon, Clock, Check, ChevronsUpDown, MessageSquare, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
+import { Input } from "@/components/ui/input";
 import {
   Popover,
   PopoverContent,
@@ -40,27 +40,28 @@ const categories = [
   },
 ];
 
-const allServices = categories.flatMap(c => c.services);
-
 const timeSlots = [
   "10:00 AM", "11:00 AM", "12:00 PM", "01:00 PM", "02:00 PM", 
   "03:00 PM", "04:00 PM", "05:00 PM", "06:00 PM", "07:00 PM"
 ];
 
 export function Booking() {
+  const [name, setName] = useState("");
+  const [phone, setPhone] = useState("");
   const [date, setDate] = useState<Date>();
   const [service, setService] = useState("");
   const [time, setTime] = useState("");
-  const [open, setOpen] = useState(false);
-  
-  const btnRef = useMagnetic(0.2);
+  const [serviceOpen, setServiceOpen] = useState(false);
+  const [timeOpen, setTimeOpen] = useState(false);
 
   const handleWhatsAppBooking = () => {
-    if (!service || !date || !time) return;
+    if (!service || !date || !time || !name || !phone) return;
 
     const formattedDate = format(date, "PPP");
     const message = encodeURIComponent(
       `Hello Lume Salon! I would like to book an appointment.\n\n` +
+      `👤 Name: ${name}\n` +
+      `📞 Contact: ${phone}\n` +
       `✨ Service: ${service}\n` +
       `📅 Date: ${formattedDate}\n` +
       `⏰ Time: ${time}`
@@ -69,7 +70,7 @@ export function Booking() {
     window.open(`https://wa.me/919747677676?text=${message}`, "_blank");
   };
 
-  const isFormValid = service && date && time;
+  const isFormValid = service && date && time && name.length > 2 && phone.length >= 10;
 
   return (
     <section id="booking" className="relative py-20 sm:py-32 px-4 sm:px-6 overflow-hidden">
@@ -82,7 +83,7 @@ export function Booking() {
         <div className="absolute inset-0" style={{ background: "var(--gradient-radial-gold)", opacity: 0.15 }} />
       </div>
 
-      <div className="relative max-w-4xl mx-auto">
+      <div className="relative max-w-5xl mx-auto">
         <div className="text-center mb-12 sm:mb-16">
           <Reveal variant="blur"><span className="eyebrow">Reservations</span></Reveal>
           <Reveal variant="blur" delay={100}>
@@ -94,25 +95,52 @@ export function Booking() {
 
         <Reveal variant="up" delay={200}>
           <div className="glass-card rounded-2xl sm:rounded-3xl p-6 sm:p-10 border border-gold/10">
-            <div className="grid md:grid-cols-3 gap-6 sm:gap-8">
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
+              {/* Name Input */}
+              <div className="space-y-3">
+                <label className="text-[10px] uppercase tracking-[0.2em] text-gold font-medium px-1">Full Name</label>
+                <div className="relative">
+                  <Input 
+                    placeholder="Enter your name"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    className="h-12 bg-background/20 border-white/10 focus:border-gold/30 pl-10"
+                  />
+                  <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gold/50" />
+                </div>
+              </div>
+
+              {/* Phone Input */}
+              <div className="space-y-3">
+                <label className="text-[10px] uppercase tracking-[0.2em] text-gold font-medium px-1">Phone Number</label>
+                <div className="relative">
+                  <Input 
+                    placeholder="Your contact number"
+                    value={phone}
+                    onChange={(e) => setPhone(e.target.value)}
+                    className="h-12 bg-background/20 border-white/10 focus:border-gold/30 pl-10"
+                  />
+                  <Phone className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gold/50" />
+                </div>
+              </div>
+
               {/* Service Selection */}
               <div className="space-y-3">
                 <label className="text-[10px] uppercase tracking-[0.2em] text-gold font-medium px-1">Select Service</label>
-                <Popover open={open} onOpenChange={setOpen}>
+                <Popover open={serviceOpen} onOpenChange={setServiceOpen}>
                   <PopoverTrigger asChild>
                     <Button
                       variant="outline"
                       role="combobox"
-                      aria-expanded={open}
                       className="w-full justify-between bg-background/20 border-white/10 text-foreground hover:bg-background/40 hover:border-gold/30 h-12"
                     >
-                      {service ? service : "Search service..."}
+                      <span className="truncate">{service ? service : "Search service..."}</span>
                       <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                     </Button>
                   </PopoverTrigger>
-                  <PopoverContent className="w-[300px] p-0 bg-background/95 backdrop-blur-xl border-gold/20" align="start">
+                  <PopoverContent className="w-[300px] p-0 bg-card border-gold/20 shadow-2xl" align="start">
                     <Command className="bg-transparent">
-                      <CommandInput placeholder="Search hair, facial..." className="h-10" />
+                      <CommandInput placeholder="Search services..." className="h-10" />
                       <CommandList>
                         <CommandEmpty>No service found.</CommandEmpty>
                         {categories.map((cat) => (
@@ -121,9 +149,9 @@ export function Booking() {
                               <CommandItem
                                 key={s}
                                 value={s}
-                                onSelect={(currentValue) => {
-                                  setService(currentValue);
-                                  setOpen(false);
+                                onSelect={() => {
+                                  setService(s);
+                                  setServiceOpen(false);
                                 }}
                                 className="flex items-center gap-2 cursor-pointer py-3"
                               >
@@ -160,7 +188,7 @@ export function Booking() {
                       {date ? format(date, "PPP") : <span>Pick a date</span>}
                     </Button>
                   </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0 bg-background/95 backdrop-blur-xl border-gold/20" align="start">
+                  <PopoverContent className="w-auto p-0 bg-card border-gold/20 shadow-2xl" align="start">
                     <Calendar
                       mode="single"
                       selected={date}
@@ -176,19 +204,50 @@ export function Booking() {
               {/* Time Selection */}
               <div className="space-y-3">
                 <label className="text-[10px] uppercase tracking-[0.2em] text-gold font-medium px-1">Choose Time</label>
-                <div className="relative group">
-                  <select
-                    value={time}
-                    onChange={(e) => setTime(e.target.value)}
-                    className="w-full h-12 bg-background/20 border border-white/10 rounded-md px-4 text-sm appearance-none focus:outline-none focus:border-gold/50 hover:bg-background/40 hover:border-gold/30 transition-all text-foreground"
-                  >
-                    <option value="" disabled className="bg-background">Select time</option>
-                    {timeSlots.map((t) => (
-                      <option key={t} value={t} className="bg-background text-foreground py-2">{t}</option>
-                    ))}
-                  </select>
-                  <Clock className="absolute right-4 top-1/2 -translate-y-1/2 h-4 w-4 text-gold pointer-events-none opacity-50" />
-                </div>
+                <Popover open={timeOpen} onOpenChange={setTimeOpen}>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant="outline"
+                      className={cn(
+                        "w-full justify-between bg-background/20 border-white/10 hover:bg-background/40 hover:border-gold/30 h-12 font-normal",
+                        !time && "text-muted-foreground"
+                      )}
+                    >
+                      <div className="flex items-center">
+                        <Clock className="mr-2 h-4 w-4 text-gold" />
+                        {time ? time : "Select time"}
+                      </div>
+                      <ChevronsUpDown className="h-4 w-4 shrink-0 opacity-50" />
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-[200px] p-0 bg-card border-gold/20 shadow-2xl" align="start">
+                    <Command className="bg-transparent">
+                      <CommandList>
+                        <CommandGroup>
+                          {timeSlots.map((t) => (
+                            <CommandItem
+                              key={t}
+                              value={t}
+                              onSelect={() => {
+                                setTime(t);
+                                setTimeOpen(false);
+                              }}
+                              className="flex items-center gap-2 cursor-pointer py-2 px-4 hover:bg-gold/10"
+                            >
+                              <Check
+                                className={cn(
+                                  "h-4 w-4 text-gold",
+                                  time === t ? "opacity-100" : "opacity-0"
+                                )}
+                              />
+                              {t}
+                            </CommandItem>
+                          ))}
+                        </CommandGroup>
+                      </CommandList>
+                    </Command>
+                  </PopoverContent>
+                </Popover>
               </div>
             </div>
 
@@ -203,12 +262,12 @@ export function Booking() {
                 </div>
               </div>
 
-              <div ref={btnRef as any} className="w-full sm:w-auto">
+              <div className="w-full sm:w-auto">
                 <Button 
                   onClick={handleWhatsAppBooking}
                   disabled={!isFormValid}
                   className={cn(
-                    "w-full sm:w-auto min-w-[200px] h-12 bg-gold hover:bg-gold/90 text-black font-medium tracking-wide uppercase text-[10px] transition-all duration-500",
+                    "w-full sm:w-auto min-w-[240px] h-12 bg-gold hover:bg-gold/90 text-black font-medium tracking-wide uppercase text-[10px] transition-all duration-500",
                     isFormValid ? "animate-pulse-glow" : "opacity-50 grayscale cursor-not-allowed"
                   )}
                 >

@@ -2,7 +2,6 @@ import { useEffect, useRef, useState } from "react";
 import reception from "@/assets/lume-reception.jpg";
 import lounge from "@/assets/lume-lounge.jpg";
 import { Reveal } from "./Reveal";
-import { useMagnetic } from "@/hooks/useMagnetic";
 
 /**
  * High-fidelity Cinematic Hero.
@@ -11,8 +10,6 @@ import { useMagnetic } from "@/hooks/useMagnetic";
 export function Hero() {
   const wrapRef = useRef<HTMLDivElement>(null);
   const [progress, setProgress] = useState(0);
-  const btn1Ref = useMagnetic(0.2);
-  const btn2Ref = useMagnetic(0.2);
 
   useEffect(() => {
     const wrap = wrapRef.current;
@@ -133,8 +130,8 @@ export function Hero() {
             </Reveal>
             <Reveal variant="scale" delay={300}>
               <div className="mt-8 sm:mt-12 flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4">
-                <a ref={btn1Ref as any} href="#booking" className="btn-gold w-full sm:w-auto">Book Appointment</a>
-                <a ref={btn2Ref as any} href="#services" className="btn-ghost-gold w-full sm:w-auto">Explore Services</a>
+                <a href="#booking" className="btn-gold w-full sm:w-auto">Book Appointment</a>
+                <a href="#services" className="btn-ghost-gold w-full sm:w-auto">Explore Services</a>
               </div>
             </Reveal>
           </div>
