@@ -7,6 +7,9 @@ export function Booking() {
   const btn1Ref = useMagnetic(0.2);
   const btn2Ref = useMagnetic(0.2);
 
+  const whatsappMessage = encodeURIComponent("Hello Lume Salon! I would like to book an appointment.\n\nService: \nDate: \nTime: ");
+  const whatsappLink = `https://wa.me/919747677676?text=${whatsappMessage}`;
+
   return (
     <section id="booking" className="relative py-20 sm:py-32 px-4 sm:px-6 overflow-hidden">
       <div className="absolute inset-0">
@@ -33,10 +36,10 @@ export function Booking() {
         </Reveal>
         <Reveal variant="scale" delay={300}>
           <div className="mt-8 sm:mt-12 flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4">
-            <a ref={btn1Ref as any} href="https://wa.me/919999999999" target="_blank" rel="noopener noreferrer" className="btn-gold animate-pulse-glow w-full sm:w-auto">
+            <a ref={btn1Ref as any} href={whatsappLink} target="_blank" rel="noopener noreferrer" className="btn-gold animate-pulse-glow w-full sm:w-auto">
               <Calendar className="h-4 w-4" /> Book Appointment
             </a>
-            <a ref={btn2Ref as any} href="tel:+919999999999" className="btn-ghost-gold w-full sm:w-auto">
+            <a ref={btn2Ref as any} href="tel:+919747677676" className="btn-ghost-gold w-full sm:w-auto">
               <Phone className="h-4 w-4" /> Call Now
             </a>
           </div>

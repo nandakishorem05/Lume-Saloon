@@ -41,7 +41,7 @@ export function Contact() {
                 <Phone className="h-5 w-5 sm:h-6 sm:w-6 text-gold shrink-0 mt-1" strokeWidth={1.3} />
                 <div>
                   <div className="text-[10px] sm:text-xs uppercase tracking-[0.2em] sm:tracking-[0.3em] text-gold mb-1 sm:mb-2">Reservations</div>
-                  <a href="tel:+919999999999" className="text-foreground/75 hover:text-gold transition-colors text-sm sm:text-base">+91 99999 99999</a>
+                  <a href="tel:+919747677676" className="text-foreground/75 hover:text-gold transition-colors text-sm sm:text-base">+91 97476 77676</a>
                 </div>
               </div>
 
@@ -53,7 +53,7 @@ export function Contact() {
                   {[
                     { Icon: Instagram, href: "#" },
                     { Icon: Facebook, href: "#" },
-                    { Icon: MessageCircle, href: "https://wa.me/919999999999" },
+                    { Icon: MessageCircle, href: `https://wa.me/919747677676?text=${encodeURIComponent("Hello Lume Salon! I would like to book an appointment.\n\nService: \nDate: \nTime: ")}` },
                   ].map(({ Icon, href }, i) => (
                     <a key={i} href={href} target="_blank" rel="noopener noreferrer"
                        className="h-10 w-10 sm:h-11 sm:w-11 rounded-full flex items-center justify-center border border-gold/30 text-gold hover:bg-gold transition-all duration-500"
